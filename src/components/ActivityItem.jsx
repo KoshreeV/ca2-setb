@@ -1,25 +1,34 @@
 import React from "react";
-import { useActivity } from "../context/ActivityContext.jsx";
+import { getActivityId } from "../utils/validation";
 
-const ActivityItem = ({ activity }) => {
-  const { toggleGoal } = useActivity();
-  const displayName = activity.name ? activity.name : "unknown";
-  const displayDate = activity.date ? activity.date : "no date";
-
-  const goalVal = activity.goalAchieved !== undefined ? activity.goalAchieved : activity.goalAcheived;
+const ActivityItem = ({ activity, onToggle }) => {
+  const activityId = getActivityId(activity);
 
   return (
-    <div className="activity-item">
-      <h3>{displayName}</h3>
-      <p>Date: {displayDate}</p>
-      <p>Steps: {activity.steps}</p>
-      <p>Calories Burned: {activity.caloriesBurned}</p>
-      <p>Workout Minutes: {activity.workoutMinutes}</p>
-      <p>Goal Achieved: {String(goalVal)}</p>
-      <button onClick={() => toggleGoal(activity.activityID)}>
-        Toggle Goal
+    <div data-testid="activity-item" style={{ textAlign: "center", margin: "20px 0" }}>
+      <h3 style={{ marginTop: 0 }}>{activity.name || "Unknown"}</h3>
+      <p>
+        <strong>Activity ID:</strong> {activityId}
+      </p>
+      <p>
+        <strong>Steps:</strong> {activity.steps}
+      </p>
+      <p>
+        <strong>Calories Burned:</strong> {activity.caloriesBurned}
+      </p>
+      <p>
+        <strong>Workout Minutes:</strong> {activity.workoutMinutes}
+      </p>
+      <p>
+        <strong>Date:</strong> {activity.date || "No date"}
+      </p>
+      <p>
+        <strong>Goal Achieved:</strong>{" "}
+        {activity.goalAchieved ? "true" : "false"}
+      </p>
+      <button onClick={() => onToggle(activityId)}>
+        Toggle Goal Status
       </button>
-      <hr />
     </div>
   );
 };

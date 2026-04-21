@@ -3,9 +3,11 @@ import { ActivityProvider } from "./context/ActivityContext.jsx";
 
 function App() {
   return (
-    <ActivityProvider>
-      <AppRouter />
-    </ActivityProvider>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minHeight: "100vh", width: "100%", backgroundColor: "white" }}>
+      <ActivityProvider>
+        <AppRouter />
+      </ActivityProvider>
+    </div>
   );
 }
 
