@@ -2,7 +2,7 @@ import React, { createContext, useReducer, useContext, useEffect } from "react";
 import { activityReducer, initialState } from "../reducer/ActivityReducer.jsx";
 import { getToken, getDataset } from "../services/api.js";
 
-const ActivityContext = createContext();
+export const ActivityContext = createContext();
 
 export const useActivity = () => {
   const context = useContext(ActivityContext);
@@ -18,48 +18,31 @@ export const ActivityProvider = ({ children }) => {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const tokenRes = await getToken(
-          "E0123021",
-          "240387",
-          "setB"
-        );
+        const tokenRes = await getToken("E0123021", "240387", "setB");
         const dataset = await getDataset(tokenRes.token, tokenRes.dataUrl);
         
-        const activitiesArray = dataset.activities || [];
-        dispatch({ type: "SET_ACTIVITIES", payload: activitiesArray });
+        if (dataset && dataset.activities) {
+          dispatch({ type: "SET_ACTIVITIES", payload: dataset.activities });
+        } else {
+          dispatch({ type: "SET_ERROR", payload: "Invalid dataset format" });
+        }
       } catch (err) {
-
-        dispatch({ type: "SET_ACTIVITIES", payload: initialState.activities });
+        dispatch({ type: "SET_ERROR", payload: err.message });
       }
     };
 
     fetchActivities();
   }, []);
 
-  const addActivity = (activity) => {
-    dispatch({ type: "ADD_ACTIVITY", payload: activity });
-  };
-
-  const deleteActivity = (id) => {
-    dispatch({ type: "DELETE_ACTIVITY", payload: id });
-  };
-
-  const updateActivity = (activity) => {
-    dispatch({ type: "UPDATE_ACTIVITY", payload: activity });
-  };
-
-  const toggleGoal = (id) => {
-    dispatch({ type: "TOGGLE_GOAL", payload: id });
+  const toggleGoalAchieved = (activityID) => {
+    dispatch({ type: "TOGGLE_GOAL_ACHIEVED", payload: activityID });
   };
 
   return (
     <ActivityContext.Provider
       value={{
-        activities: state.activities,
-        addActivity,
-        deleteActivity,
-        updateActivity,
-        toggleGoal,
+        state,
+        toggleGoalAchieved,
       }}
     >
       {children}

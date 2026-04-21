@@ -1,30 +1,27 @@
 import React from "react";
 import { useActivity } from "../context/ActivityContext";
+import { getValidActivities, getActivityId } from "../utils/validation";
 import ActivityItem from "../components/ActivityItem";
 
 const Activities = () => {
-  const { activities } = useActivity();
+  const { state, toggleGoalAchieved } = useActivity();
 
-  const validActivities = activities.filter((activity) => {
-    // The previous requirements: steps>0, caloriesBurned>0, workoutMinutes>0
-    // And goalAchieved (or goalAcheived) must be boolean
-    const goalVal = activity.goalAchieved !== undefined ? activity.goalAchieved : activity.goalAcheived;
-    
-    return (
-      Number(activity.steps) > 0 &&
-      Number(activity.caloriesBurned) > 0 &&
-      Number(activity.workoutMinutes) > 0 &&
-      typeof goalVal === "boolean"
-    );
-  });
+  if (state.loading) return <div>Loading activities...</div>;
+  if (state.error) return <div>Error: {state.error}</div>;
+
+  const validActivities = getValidActivities(state.activities);
 
   return (
-    <div>
+    <div style={{ textAlign: 'center' }}>
       <h1>Activities List</h1>
       <p>Showing {validActivities.length} valid activities.</p>
-      <div className="activities-list">
+      <div className="activities-list" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {validActivities.map((activity) => (
-          <ActivityItem key={activity.activityID} activity={activity} />
+          <ActivityItem 
+            key={getActivityId(activity)} 
+            activity={activity} 
+            onToggle={toggleGoalAchieved}
+          />
         ))}
       </div>
     </div>
